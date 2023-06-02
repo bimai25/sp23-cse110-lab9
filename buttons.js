@@ -9,6 +9,15 @@ window.onerror = function(){
     console.log("An error was triggered :(");
 };
 
+function evaluate(firstNum, secondNum, operator){
+    if(isNaN(`${firstNum}`) || isNaN(`${secondNum}`)){
+        throw new SyntaxError("Please only input numbers into the calculator!");
+    }
+    if(`${operator}` == '/' && `${secondNum}` == '0'){
+        throw new CalculationError("Cannot divide by 0");
+    }
+    return eval(`${firstNum} ${operator} ${secondNum}`);
+}
 let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       e.preventDefault();
@@ -17,17 +26,18 @@ let form = document.querySelector('form');
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
       try{
-        if(isNaN(`${firstNum}`) || isNaN(`${secondNum}`)){
-            throw new SyntaxError("Please only input numbers into the calculator!");
-        }
-        if(`${operator}` == '/' && `${secondNum}` == '0'){
-            throw new CalculationError("Cannot divide by 0");
-        }
-        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+        output.innerHTML = evaluate(firstNum, secondNum, operator);
       }catch(err){
-        alert(err);
+        if(err instanceof CalculationError){
+            alert(err.message);
+        }
+        else if(err instanceof SyntaxError){
+            alert(err.message);
+        }else{
+            throw err;
+        }
       }finally{
-        console.log(`Attemped the operation ${firstNum} ${operator} ${secondNum}`);
+        console.log(`Attempted the operation ${firstNum} ${operator} ${secondNum}`);
       }
     });
 
